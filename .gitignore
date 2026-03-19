@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Données volumineuses 
+data/*
+!data/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
