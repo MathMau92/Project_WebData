@@ -1,3 +1,16 @@
+"""
+Étape 5 — Pipeline RAG : NL → SPARQL → Réponse via Ollama (llama3.2)
+Input  : kg_artifacts/ontology.ttl
+LLM    : llama3.2 via Ollama (ollama run llama3.2)
+
+Installe :
+    pip install requests rdflib
+    ollama pull llama3.2
+
+Lance :
+    python src/rag/rag.py
+"""
+
 import json
 import os
 import re
@@ -61,6 +74,9 @@ IMPORTANT RULES:
     - Use OPTIONAL for properties that may be missing
     - Limit results with LIMIT 10 unless asked otherwise
     - Output ONLY the SPARQL query, no explanation, no markdown fences
+    - NEVER use MAX() or MIN() in SELECT — use ORDER BY DESC(?var) LIMIT 1 instead
+    - To find a game by partial name, use rdfs:label with FILTER(CONTAINS()) not a URI
+    - To find who developed a game: use ent:Game_Name vg:developedBy ?studio pattern
 
 EXAMPLES:
 
@@ -129,6 +145,61 @@ SELECT ?label ?rating WHERE {
     FILTER(lang(?label)="en")
     FILTER(?rating > 4.0)
 } ORDER BY DESC(?rating)
+
+Q: What is the best game according to metacritic? / What game has the highest metacritic score?
+A:
+PREFIX vg: <http://videogamekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?label ?score WHERE {
+    ?g a vg:Game ;
+       rdfs:label ?label ;
+       vg:metacritic ?score .
+    FILTER(lang(?label)="en")
+} ORDER BY DESC(?score) LIMIT 1
+
+Q: What are the top 5 games by rating?
+A:
+PREFIX vg: <http://videogamekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?label ?rating WHERE {
+    ?g a vg:Game ;
+       rdfs:label ?label ;
+       vg:rating ?rating .
+    FILTER(lang(?label)="en")
+} ORDER BY DESC(?rating) LIMIT 5
+
+Q: Which studio developed Assassin's Creed Valhalla?
+A:
+PREFIX vg: <http://videogamekg.org/ontology#>
+PREFIX ent: <http://videogamekg.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?studioLabel WHERE {
+    ent:Assassin_s_Creed_Valhalla vg:developedBy ?studio .
+    ?studio rdfs:label ?studioLabel .
+    FILTER(lang(?studioLabel)="en")
+}
+
+Q: Which studio developed Arma 3?
+A:
+PREFIX vg: <http://videogamekg.org/ontology#>
+PREFIX ent: <http://videogamekg.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?studioLabel WHERE {
+    ent:Arma_3 vg:developedBy ?studio .
+    ?studio rdfs:label ?studioLabel .
+    FILTER(lang(?studioLabel)="en")
+}
+
+Q: Which studio developed Baldur's Gate III?
+A:
+PREFIX vg: <http://videogamekg.org/ontology#>
+PREFIX ent: <http://videogamekg.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?studioLabel WHERE {
+    ent:Baldur_s_Gate_III vg:developedBy ?studio .
+    ?studio rdfs:label ?studioLabel .
+    FILTER(lang(?studioLabel)="en")
+}
 """
 
 # ---------------------------------------------------------------------------
@@ -167,7 +238,7 @@ def call_ollama(prompt: str, system: str = "") -> str:
         r.raise_for_status()
         return r.json().get("response", "").strip()
     except requests.exceptions.ConnectionError:
-        return "ERREUR: Ollama n'est pas lancé. Lancez 'ollama serve' dans un terminal."
+        return "ERREUR: Ollama n'est pas lancé. Lance 'ollama serve' dans un terminal."
     except Exception as e:
         return f"ERREUR Ollama: {e}"
 
@@ -311,7 +382,7 @@ def rag_pipeline(g: Graph, question: str, verbose: bool = False) -> str:
 EVAL_QUESTIONS = [
     "Which games were developed by Bohemia Interactive?",
     "What genres does Armello belong to?",
-    "What is the best game ?",
+    "Which games are available on PC and have an RPG genre?",
     "What is the metacritic score of Assassin's Creed Valhalla?",
     "Which games are similar to Arma 3?",
     "Which studios developed both an Action and RPG game?",
