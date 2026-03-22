@@ -6,9 +6,9 @@ venv/
 .env
 
 # Données volumineuses 
-data/*
-!data/family.owl
-kg_artifacts/*
+# data/*
+# !data/family.owl
+# kg_artifacts/*
 
 # OS
 .DS_Store
