@@ -7,7 +7,7 @@ venv/
 
 # Données volumineuses 
 data/*
-!data/.gitkeep
+!data/family.owl
 kg_artifacts/*
 
 # OS
