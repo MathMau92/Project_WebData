@@ -13,7 +13,7 @@ API_KEY = "cd0014ae3d814377b580e3ee935e8ce7"
 
 RAWG_URL    = "https://api.rawg.io/api"
 HEADERS     = {"User-Agent": "ProjetEtudiantWebDatamining (mathieu.maury@edu.devinci.fr)"}
-CRAWL_DELAY = 0.05
+CRAWL_DELAY = 1.0
 
 INPUT_FILE  = Path("data/titles.json")
 OUTPUT_FILE = Path("data/raw/all_games.json")

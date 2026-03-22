@@ -8,7 +8,7 @@ import requests
 API_URL     = "https://fr.wikipedia.org/w/api.php"
 HEADERS     = {"User-Agent": "ProjetEtudiantWebDatamining (mathieu.maury@edu.devinci.fr)"}
 CRAWL_DELAY = 0.05
-MAX_TITLES  = 50
+MAX_TITLES  = int(input("How many games to scrap ?"))
 
 SEED_CATEGORIES = [
     "Jeu vidéo de rôle",
@@ -31,7 +31,7 @@ EXCLUDED_PREFIXES = (
     "catégorie", "modèle", "wikipédia",
 )
 
-OUTPUT_FILE = Path("data/titles.json")
+OUTPUT_FILE = Path("data/titles.json") 
 
 # ---------------------------------------------------------------------------
 
