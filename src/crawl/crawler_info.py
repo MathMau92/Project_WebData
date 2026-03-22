@@ -1,16 +1,3 @@
-"""
-Étape 1B — Enrichissement des titres via l'API RAWG
-Input  : data/titles.json   (généré par step1_get_titles.py)
-Output : data/raw/all_games.json
-
-Prérequis :
-    pip install requests
-    Clé API gratuite sur https://rawg.io/apidocs
-
-Lance :
-    python step2_enrich_rawg.py
-"""
-
 import json
 import time
 from pathlib import Path
@@ -18,7 +5,7 @@ from pathlib import Path
 import requests
 
 # ---------------------------------------------------------------------------
-# ⚠️  Mets ta clé API RAWG ici (gratuit sur https://rawg.io/apidocs)
+#clé API RAWG ici (gratuit sur https://rawg.io/apidocs)
 # ---------------------------------------------------------------------------
 API_KEY = "cd0014ae3d814377b580e3ee935e8ce7"
 
@@ -90,19 +77,14 @@ def parse_game(raw: dict, original_title: str) -> dict:
         "metacritic":     raw.get("metacritic", ""),
         "tags":           tags,
         "site_web":       raw.get("website", ""),
-        "texte_intro":    desc,
+        # "texte_intro":    desc,
     }
 
 
 def main():
-    if API_KEY == "Mets":
-        print("❌ Mets ta clé API dans API_KEY !")
-        print("   → Inscris-toi sur https://rawg.io/apidocs (gratuit)")
-        return
-
     if not INPUT_FILE.exists():
-        print(f"❌ Fichier introuvable : {INPUT_FILE}")
-        print("   → Lance d'abord step1_get_titles.py")
+        print(f" Fichier introuvable : {INPUT_FILE}")
+        print("   → Lancez d'abord crawler_titles.py")
         return
 
     titles = json.loads(INPUT_FILE.read_text(encoding="utf-8"))
@@ -118,7 +100,7 @@ def main():
         # 1. Chercher le jeu
         stub = search_game(title)
         if not stub:
-            print("✗ non trouvé")
+            print("X non trouvé")
             not_found.append(title)
             time.sleep(CRAWL_DELAY)
             continue
@@ -126,14 +108,14 @@ def main():
         # 2. Récupérer les détails complets
         details = get_game_details(stub["id"])
         if not details:
-            print("✗ détails manquants")
+            print("X détails manquants")
             not_found.append(title)
             time.sleep(CRAWL_DELAY)
             continue
 
         game = parse_game(details, original_title=title)
         results.append(game)
-        print(f"✓  →  {game['titre_rawg']} ({game['date_sortie']})")
+        print(f" [Trouvé]  →  {game['titre_rawg']} ({game['date_sortie']})")
         time.sleep(CRAWL_DELAY)
 
     # Sauvegarde

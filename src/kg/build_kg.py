@@ -1,15 +1,3 @@
-"""
-Étape 2 — Construction du Graphe RDF
-Input  : data/raw/all_games.json  (généré par step2_enrich_rawg.py)
-Output : kg_artifacts/videogames.ttl
-
-Installe :
-    pip install rdflib
-
-Lance :
-    python step3_build_kg.py
-"""
-
 import json
 import re
 from pathlib import Path
@@ -164,8 +152,8 @@ def add_game(g: Graph, game: dict) -> None:
     if game.get("site_web"):
         g.add((game_uri, VG.website, Literal(game["site_web"], datatype=XSD.anyURI)))
 
-    if game.get("texte_intro"):
-        g.add((game_uri, VG.description, Literal(game["texte_intro"][:300], lang="en")))
+    # if game.get("texte_intro"):
+    #     g.add((game_uri, VG.description, Literal(game["texte_intro"][:300], lang="en")))
 
     if game.get("rawg_id"):
         g.add((game_uri, VG.rawgId, Literal(int(game["rawg_id"]), datatype=XSD.integer)))

@@ -1,11 +1,3 @@
-"""
-Étape 1A — Récupération des titres de jeux vidéo (Wikipedia FR)
-Output : data/titles.json  →  liste de titres bruts
-
-Lance :
-    python step1_get_titles.py
-"""
-
 import json
 import re
 import time
