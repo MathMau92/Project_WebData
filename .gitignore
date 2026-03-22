@@ -8,6 +8,7 @@ venv/
 # Données volumineuses 
 data/*
 !data/.gitkeep
+kg_artifacts/*
 
 # OS
 .DS_Store
