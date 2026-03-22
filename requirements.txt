@@ -1,0 +1,23 @@
+# Étape 1 — Crawler
+requests==2.32.3
+beautifulsoup4==4.12.3
+
+# Étape 2 — Graphe RDF
+rdflib==7.0.0
+
+# Étape 3 — Raisonnement SWRL
+owlready2==0.46
+
+# Étape 4 — KGE
+pykeen==1.10.2
+torch==2.3.1
+
+# Étape 5 — RAG
+# (Ollama est installé séparément : https://ollama.com)
+# Le pipeline RAG utilise rdflib (déjà listé) + requests (déjà listé)
+
+# Utilitaires
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.0
+matplotlib==3.9.0
